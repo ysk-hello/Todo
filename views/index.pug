@@ -16,11 +16,21 @@ html(lang="ja")
     div.my-5
         form(action="/", method="post") 
             span.mx-3 TODO
-            input(type="text" name="todo", id="text").mx-3
+            input(type="text", name="todo", id="text").mx-3
             button(type="submit", id="addButton").btn.btn-primary.mx-3 追加
 
-    div.card
-        ul.list-group.list-gorup-flush
-            each todo in todos
-                li.list-group-item #{todo.content}
-                
+    //- div.card
+    //-     ul.list-group.list-gorup-flush
+    //-         each todo in todos
+    //-             li.list-group-item #{todo.content}
+
+    div 
+        table.table.table-bordered
+            each todo in todos 
+                tr 
+                    td(width=300) #{todo.content}
+                    td(width=100)
+                        div(align="center")
+                            form(action="/delete", method="post")
+                                input(type="hidden", name="id" value=todo.id)
+                                button(type="submit").btn.btn-danger 削除

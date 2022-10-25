@@ -1,6 +1,7 @@
 'use strict';
 const http = require('http');
 const pug = require('pug');
+const { URLSearchParams } = require('url');
 const Todo = require('./lib/db-access');
 
 const server = http.createServer((req, res) => {
@@ -9,7 +10,16 @@ const server = http.createServer((req, res) => {
             getHandle(req, res);
             break;
         case 'POST':
-            postHandle(req, res);
+            switch(req.url){
+                case '/':
+                    postHandle(req, res);
+                    break;
+                case '/delete':
+                    deleteHandle(req, res);
+                    break;
+                default:
+                    break;
+            }
             break;
         default:
             break;
@@ -53,6 +63,28 @@ async function postHandle(req, res) {
         await Todo.create({content: decoded.get('todo')});
 
         // リダイレクト
+        handleRedirect(req, res);
+    });
+};
+
+/**
+ * 削除に対しての処理
+ * @param {*} req 
+ * @param {*} res 
+ */
+function deleteHandle(req, res) {
+    let body = '';
+    req
+    .on('data', chunk => {
+        body += chunk;
+    })
+    .on('end', async () => {
+        const params = new URLSearchParams(body);
+        const id = params.get('id');
+        const todo = await Todo.findByPk(id);
+        await todo.destroy();
+        console.log('delete');
+
         handleRedirect(req, res);
     });
 };
